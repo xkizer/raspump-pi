@@ -9,10 +9,16 @@ exports.socket = {
         return new Promise((res, rej) => {
             // Attempt connection
             const client = io(url);
+            console.log('CONNECTING...', url);
             client.once('connect', () => {
+                console.log('CONNECTED...', url);
                 res(new SocketClient(client));
             });
             client.on('connect_error', e => {
+                console.log('CONNECT ERROR', e);
+            });
+            client.once('reconnect_failed', e => {
+                console.log('RECONNECTION FAILED', e);
                 rej(e);
             });
         });
@@ -93,6 +99,7 @@ class SocketClient {
                 this.onReconnect();
             }
         });
+        this.socket.connect();
     }
     requireLogin() {
         if (!this.user) {

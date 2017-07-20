@@ -48,23 +48,18 @@ function statusListener(status) {
     }
 }
 function localSetup(socket) {
-    // Disconnect the remote server
-    remoteSocket && remoteSocket.disconnect();
-    socket.subscribe(deviceId, statusListener);
     const pushButtonListerner = status => console.log('PUSH BUTTON', status) || socket.setStatus(deviceId, status);
-    pump_1.pump.on('pushButton', pushButtonListerner);
+    const onConnected = () => {
+        // When the physical button is pushed, update servers
+        pump_1.pump.on('pushButton', pushButtonListerner);
+        // When we reconnect, disable remote
+        remoteSocket && remoteSocket.disconnect();
+        socket.subscribe(deviceId, statusListener);
+    };
     const onReconnect = () => {
         // Set up the socket again
         commonSetup(socket)
-            .then(() => {
-            // When the physical button is pushed, update servers
-            pump_1.pump.on('pushButton', pushButtonListerner);
-        })
-            .then(() => {
-            // When we reconnect, disable remote
-            remoteSocket && remoteSocket.disconnect();
-            socket.subscribe(deviceId, statusListener);
-        });
+            .then(onConnected);
     };
     const onDisconnect = () => {
         // When we disconnect, try to reconnect the remote
@@ -74,21 +69,20 @@ function localSetup(socket) {
     };
     socket.onDisconnect = onDisconnect;
     socket.onReconnect = onReconnect;
+    onConnected();
 }
 function remoteSetup(socket) {
-    socket.subscribe(deviceId, statusListener);
     const pushButtonListerner = status => socket.setStatus(deviceId, status);
-    pump_1.pump.on('pushButton', pushButtonListerner);
+    const onConnected = () => {
+        // When the physical button is pushed, update servers
+        pump_1.pump.on('pushButton', pushButtonListerner);
+        localSocket && localSocket.socket.connected && socket.disconnect();
+        socket.subscribe(deviceId, statusListener);
+    };
     const onReconnect = () => {
         // Set up the socket again
         commonSetup(socket)
-            .then(() => {
-            // When the physical button is pushed, update servers
-            pump_1.pump.on('pushButton', pushButtonListerner);
-        })
-            .then(() => {
-            socket.subscribe(deviceId, statusListener);
-        });
+            .then(onConnected);
     };
     const onDisconnect = () => {
         // Unsibscribe
@@ -97,6 +91,7 @@ function remoteSetup(socket) {
     };
     socket.onDisconnect = onDisconnect;
     socket.onReconnect = onReconnect;
+    onConnected();
 }
 function getInitialStatus(socket) {
     console.log('GETTING INTIAL STATUS');
