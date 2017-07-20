@@ -61,6 +61,7 @@ function localSetup(socket: SocketClient) {
     remoteSocket && remoteSocket.disconnect();
     socket.subscribe(deviceId, statusListener);
     const pushButtonListerner = status => console.log('PUSH BUTTON', status) || socket.setStatus(deviceId, status);
+    pump.on('pushButton', pushButtonListerner);
 
     const onReconnect = () => {
         // Set up the socket again
@@ -90,6 +91,7 @@ function localSetup(socket: SocketClient) {
 function remoteSetup(socket: SocketClient) {
     socket.subscribe(deviceId, statusListener);
     const pushButtonListerner = status => socket.setStatus(deviceId, status);
+    pump.on('pushButton', pushButtonListerner);
 
     const onReconnect = () => {
         // Set up the socket again
