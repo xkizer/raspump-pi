@@ -25,6 +25,8 @@ socket_1.socket.connect(remoteUrl)
     .then(socket => remoteSocket = socket)
     .then(commonSetup)
     .then(remoteSetup);
+// When pump is switched, update the date
+pump_1.pump.on('switch', status => switchDate = status.date);
 function commonSetup(socket) {
     // Login first
     return socket.login(authInfo.user, authInfo.password)
@@ -45,15 +47,18 @@ function statusListener(status) {
         pump_1.pump.switchPump(status.status, newDate);
     }
 }
-// When pump is switched, update the date
-pump_1.pump.on('switch', status => switchDate = status.date);
 function localSetup(socket) {
     // Disconnect the remote server
     remoteSocket && remoteSocket.disconnect();
     socket.subscribe(deviceId, statusListener);
+    const pushButtonListerner = status => socket.setStatus(deviceId, status);
     const onReconnect = () => {
         // Set up the socket again
         commonSetup(socket)
+            .then(() => {
+            // When the physical button is pushed, update servers
+            pump_1.pump.on('pushButton', pushButtonListerner);
+        })
             .then(() => {
             // When we reconnect, disable remote
             remoteSocket && remoteSocket.disconnect();
@@ -64,15 +69,21 @@ function localSetup(socket) {
         // When we disconnect, try to reconnect the remote
         remoteSocket && remoteSocket.reconnect();
         socket.unsubscribe(deviceId, statusListener);
+        pump_1.pump.off('pushButton', pushButtonListerner);
     };
     socket.onDisconnect = onDisconnect;
     socket.onReconnect = onReconnect;
 }
 function remoteSetup(socket) {
     socket.subscribe(deviceId, statusListener);
+    const pushButtonListerner = status => socket.setStatus(deviceId, status);
     const onReconnect = () => {
         // Set up the socket again
         commonSetup(socket)
+            .then(() => {
+            // When the physical button is pushed, update servers
+            pump_1.pump.on('pushButton', pushButtonListerner);
+        })
             .then(() => {
             socket.subscribe(deviceId, statusListener);
         });
@@ -80,6 +91,7 @@ function remoteSetup(socket) {
     const onDisconnect = () => {
         // Unsibscribe
         socket.unsubscribe(deviceId, statusListener);
+        pump_1.pump.off('pushButton', pushButtonListerner);
     };
     socket.onDisconnect = onDisconnect;
     socket.onReconnect = onReconnect;

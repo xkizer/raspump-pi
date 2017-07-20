@@ -24,6 +24,9 @@ exports.pump = {
     on(...args) {
         emitter.addListener(...args);
     },
+    off(...args) {
+        emitter.removeListener(...args);
+    },
 };
 // Listen for when the pump is switched on
 const button = new onoff_1.Gpio(12, 'in', 'rising');
@@ -33,6 +36,7 @@ const buttonCb = (_err, value) => {
     if (+value === 1) {
         // Switch state
         exports.pump.switchPump(!currentState);
+        emitter.emit('pushButton', currentState);
     }
 };
 const buttonCcb = throttle(buttonCb, 900, { trailing: false });

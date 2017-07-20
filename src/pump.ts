@@ -27,6 +27,10 @@ export const pump = {
         emitter.addListener(...args);
     },
 
+    off(...args) {
+        emitter.removeListener(...args);
+    },
+
 };
 
 // Listen for when the pump is switched on
@@ -38,6 +42,7 @@ const buttonCb = (_err, value) => {
     if (+value === 1) {
         // Switch state
         pump.switchPump(!currentState);
+        emitter.emit('pushButton', currentState);
     }
 };
 
