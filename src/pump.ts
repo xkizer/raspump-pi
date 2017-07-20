@@ -24,10 +24,12 @@ export const pump = {
     },
 
     on(...args) {
+        console.log('SUBSCRIBING TO EVENTS', ...args);
         emitter.addListener(...args);
     },
 
     off(...args) {
+        console.log('UNSUBSCRIBING TO EVENTS', ...args);
         emitter.removeListener(...args);
     },
 

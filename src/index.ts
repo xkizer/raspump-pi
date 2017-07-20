@@ -60,7 +60,7 @@ function localSetup(socket: SocketClient) {
     // Disconnect the remote server
     remoteSocket && remoteSocket.disconnect();
     socket.subscribe(deviceId, statusListener);
-    const pushButtonListerner = status => socket.setStatus(deviceId, status);
+    const pushButtonListerner = status => console.log('PUSH BUTTON', status) || socket.setStatus(deviceId, status);
 
     const onReconnect = () => {
         // Set up the socket again
