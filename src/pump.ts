@@ -44,6 +44,7 @@ const buttonCb = (_err, value) => {
     if (+value === 1) {
         // Switch state
         pump.switchPump(!currentState);
+        console.log(' ===> DISPATCHING EVENT');
         emitter.emit('pushButton', currentState);
     }
 };
