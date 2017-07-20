@@ -35,7 +35,7 @@ const buttonCb = (_err, value) => {
         exports.pump.switchPump(!currentState);
     }
 };
-const buttonCcb = throttle(buttonCb, 300, { trailing: false });
+const buttonCcb = throttle(buttonCb, 900, { trailing: false });
 button.watch(buttonCcb);
 process.on('beforeExit', () => {
     // Open the relay on crash
