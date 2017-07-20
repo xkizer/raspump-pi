@@ -1,0 +1,15 @@
+{
+  "local": {
+    "host": "192.168.8.103",
+    "port": 32000
+  },
+  "remote": {
+    "host": "192.168.8.103",
+    "port": 39000
+  },
+  "auth": {
+    "user": "boostpump",
+    "password": "`H(-5mk*k^H)}bDE"
+  },
+  "deviceId": "boostpump"
+}

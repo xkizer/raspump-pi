@@ -1,0 +1,34 @@
+{
+  "name": "raspump-pi",
+  "version": "0.0.1",
+  "description": "Raspberry Pi pump controller - Raspberry Pi unit",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha test",
+    "start": "node src/index"
+  },
+  "author": "Kizer",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "nconf": "^0.8.4",
+    "onoff": "^1.1.4",
+    "socket.io-client": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.1",
+    "@types/chai-as-promised": "0.0.31",
+    "@types/chai-spies": "0.0.0",
+    "@types/lodash": "^4.14.70",
+    "@types/mocha": "^2.2.41",
+    "@types/nconf": "0.0.34",
+    "@types/onoff": "0.0.27",
+    "@types/socket.io-client": "^1.4.29",
+    "chai": "^4.1.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-spies": "^0.7.1",
+    "mocha": "^3.4.2",
+    "ts-node": "^3.2.0",
+    "typescript": "^2.4.1"
+  }
+}
