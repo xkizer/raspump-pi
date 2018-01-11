@@ -18,19 +18,38 @@ let remoteSocket: SocketClient;
 let localSocket: SocketClient;
 let switchDate: Date;
 
+function init() {
 // Connect to both local and remote at the same time
-socket.connect(localUrl)
-    .then(socket => localSocket = socket)
-    .then(commonSetup)
-    .then(localSetup);
+    socket.connect(localUrl)
+        .then(socket => localSocket = socket)
+        .then(commonSetup)
+        .then(localSetup);
 
-socket.connect(remoteUrl)
-    .then(socket => remoteSocket = socket)
-    .then(commonSetup)
-    .then(remoteSetup);
+    socket.connect(remoteUrl)
+        .then(socket => remoteSocket = socket)
+        .then(commonSetup)
+        .then(remoteSetup);
+}
+
+init();
+
+// Connection cycle after every 5 minutes
+setInterval(connectCycle, 5 * 60 * 1000);
 
 // When pump is switched, update the date
 pump.on('switch', status => switchDate = status.date);
+
+function connectCycle() {
+    console.log('CONNECTION CYCLE');
+    try {
+        localSocket.disconnect();
+        remoteSocket.disconnect();
+    } catch (e) {
+        console.warn('WARN: unable to disconnect');
+    }
+
+    init();
+}
 
 function commonSetup(socket: SocketClient) {
     // Login first

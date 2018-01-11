@@ -16,17 +16,33 @@ const remoteUrl = `http://${remoteConfig.host}:${remoteConfig.port}`;
 let remoteSocket;
 let localSocket;
 let switchDate;
-// Connect to both local and remote at the same time
-socket_1.socket.connect(localUrl)
-    .then(socket => localSocket = socket)
-    .then(commonSetup)
-    .then(localSetup);
-socket_1.socket.connect(remoteUrl)
-    .then(socket => remoteSocket = socket)
-    .then(commonSetup)
-    .then(remoteSetup);
+function init() {
+    // Connect to both local and remote at the same time
+    socket_1.socket.connect(localUrl)
+        .then(socket => localSocket = socket)
+        .then(commonSetup)
+        .then(localSetup);
+    socket_1.socket.connect(remoteUrl)
+        .then(socket => remoteSocket = socket)
+        .then(commonSetup)
+        .then(remoteSetup);
+}
+init();
+// Connection cycle after every 5 minutes
+setInterval(connectCycle, 5 * 60 * 1000);
 // When pump is switched, update the date
 pump_1.pump.on('switch', status => switchDate = status.date);
+function connectCycle() {
+    console.log('CONNECTION CYCLE');
+    try {
+        localSocket.disconnect();
+        remoteSocket.disconnect();
+    }
+    catch (e) {
+        console.warn('WARN: unable to disconnect');
+    }
+    init();
+}
 function commonSetup(socket) {
     // Login first
     return socket.login(authInfo.user, authInfo.password)
